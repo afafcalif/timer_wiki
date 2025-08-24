@@ -40,7 +40,7 @@ function ensureAudio() {
     if (audioCtx.state === 'suspended') audioCtx.resume();
   } catch (e) { /* noop */ }
 }
-function beep({ freq=880, duration=220, type='sine', volume=0.05 } = {}) {
+function beep({ freq=880, duration=220, type='sine', volume=0.10 } = {}) {
   if (!audioCtx) return;
   const osc = audioCtx.createOscillator();
   const gain = audioCtx.createGain();
