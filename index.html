@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BossTimer MVP – 범용 보스/시간 알림</title>
+  <title>timer.wiki – 범용 보스/시간 알림</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="container">
     <!-- Header -->
     <header>
-      <h1>BossTimer MVP <span style="opacity:.6;font-size:.8em">– 범용 보스/시간 알림</span></h1>
+      <h1>timer.wiki <span style="opacity:.6;font-size:.8em">– 범용 보스/시간 알림</span></h1>
       <div class="tz">로컬 시간대: <span id="tz"></span></div>
     </header>
 
@@ -20,6 +20,7 @@
         <div class="banner" id="notifyBanner">
           🔔 브라우저 알림을 켜면 백그라운드에서도 알림을 받을 수 있어요.
           <button class="btn small" id="btnEnableNotif">알림 허용</button>
+          <button class="btn small" id="btnEnableSound">소리 켜기</button>
         </div>
         <div class="stack">
           <button class="btn ghost small" id="btnExport">내보내기</button>

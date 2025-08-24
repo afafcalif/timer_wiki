@@ -32,6 +32,27 @@ const state = {
   notifGranted: (typeof Notification !== 'undefined' && Notification.permission === 'granted')
 };
 
+// ==== Sound (Web Audio) ====
+let audioCtx = null;
+function ensureAudio() {
+  try {
+    if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+  } catch (e) { /* noop */ }
+}
+function beep({ freq=880, duration=220, type='sine', volume=0.05 } = {}) {
+  if (!audioCtx) return;
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.value = freq;
+  gain.gain.setValueAtTime(volume, audioCtx.currentTime);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration/1000);
+}
+$('#btnEnableSound')?.addEventListener('click', () => { ensureAudio(); beep(); });
+
 // ==== Pre-alert chips ====
 const preWrap = $('#preChips');
 function renderPreChips(){
@@ -86,6 +107,8 @@ function notify(title, body){
   try{
     if(state.notifGranted){ new Notification(title, { body }); }
   }catch(e){ /* noop */ }
+  // play beep if user enabled audio
+  beep();
 }
 
 // ==== Add Timer ====
@@ -95,7 +118,7 @@ $('#btnAdd').onclick = () => {
   if(!name){ alert('이름을 입력하세요'); return; }
 
   let nextAt = 0, durationMs = 0, repeatEvery = false, dailyHHMM = undefined;
-  const preAlerts = Array.from(state.preSelected).sort((a,b)=>a-b);
+  let preAlerts = Array.from(state.preSelected).sort((a,b)=>a-b);
 
   if(mode==='countdown'){
     const minutes = parseInt($('#countdownMin').value,10);
@@ -103,6 +126,9 @@ $('#btnAdd').onclick = () => {
     durationMs = minutes*60*1000;
     nextAt = Date.now() + durationMs;
     repeatEvery = $('#repeatEvery').checked;
+
+    // ❗ 카운트다운 길이보다 긴 사전 알림은 제거
+    preAlerts = preAlerts.filter(m => m*60*1000 < durationMs);
   } else {
     const hhmm = $('#dailyTime').value; // 'HH:MM'
     if(!hhmm){ alert('시각을 선택하세요'); return; }
@@ -168,19 +194,21 @@ function renderList(){
   for(const t of sorted){
     const el = document.createElement('div');
     el.className = 'timer-item';
-    const next = new Date(t.nextAt);
+
+    const isDaily = t.mode === 'daily';
+    const nextLabel = isDaily ? new Date(t.nextAt).toLocaleString() : '—'; // 카운트다운은 다음 시각 표시 X
     const {label, cls} = remainLabel(t.nextAt - now);
     const pre = (t.preAlerts||[]).map(m=>`<span class="tag">-${m}m</span>`).join('');
-    const meta = t.mode==='daily'
+    const meta = isDaily
       ? `매일 ${t.dailyHHMM}`
       : `${Math.round((t.durationMs||0)/60000)}분` + (t.repeatEvery? ' · 반복':'');
 
     el.innerHTML = `
       <div>
         <h4>${escapeHtml(t.name)}</h4>
-        <div class="meta">${pre} <span class="tag">${t.mode==='daily'?'DAILY':'COUNTDOWN'}</span></div>
+        <div class="meta">${pre} <span class="tag">${isDaily?'DAILY':'COUNTDOWN'}</span></div>
       </div>
-      <div class="meta">다음 시각<br>${next.toLocaleString()}</div>
+      <div class="meta">다음 시각<br>${nextLabel}</div>
       <div class="remains ${cls}">${label}</div>
       <div class="meta">설정<br>${meta}</div>
       <div class="stack" style="justify-content:flex-end">
@@ -198,7 +226,7 @@ function renderList(){
       t.nextAt += 5*60*1000;
       saveTimers(); renderList();
     };
-    el.querySelector('[data-act="test"]').onclick = () => notify(`테스트: ${t.name}`, '알림이 정상 동작합니다');
+    el.querySelector('[data-act="test"]').onclick = () => { ensureAudio(); notify(`테스트: ${t.name}`, '알림이 정상 동작합니다'); };
 
     list.appendChild(el);
   }
@@ -219,6 +247,7 @@ function remainLabel(ms){
 function tick(){
   const now = Date.now();
   let changed = false;
+  const idsToDelete = [];
 
   for(const t of state.timers){
     // Cycle key to avoid duplicate alerts across repeats
@@ -243,21 +272,34 @@ function tick(){
         t.fired[cycleKey]['due'] = true;
         changed = true;
       }
-      // Schedule next cycle
+
+      // Schedule next cycle or delete
       if(t.mode==='daily'){
         t.nextAt = computeNextDailyEpoch(t.dailyHHMM);
         const nk = String(t.nextAt);
         t.fired[nk] = {};
-      } else if(t.mode==='countdown' && t.repeatEvery){
-        t.nextAt = now + (t.durationMs||0);
-        const nk = String(t.nextAt);
-        t.fired[nk] = {};
+      } else if(t.mode==='countdown'){
+        if(t.repeatEvery){
+          t.nextAt = now + (t.durationMs||0);
+          const nk = String(t.nextAt);
+          t.fired[nk] = {};
+        } else {
+          // 반복 없는 카운트다운은 due 후 자동 삭제
+          idsToDelete.push(t.id);
+        }
       }
     }
   }
 
+  if(idsToDelete.length){
+    state.timers = state.timers.filter(x => !idsToDelete.includes(x.id));
+    changed = true;
+    renderList(); // 행 삭제 반영
+  } else {
+    updateTimeLabels(); // 남은 시간만 갱신
+  }
+
   if(changed) saveTimers();
-  updateTimeLabels();
 }
 
 function updateTimeLabels(){
@@ -278,7 +320,7 @@ $('#btnExport').onclick = () => {
   const blob = new Blob([JSON.stringify(state.timers,null,2)], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = 'bosstimer-export.json'; a.click();
+  a.href = url; a.download = 'timer.wiki-export.json'; a.click();
   URL.revokeObjectURL(url);
 };
 
