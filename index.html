@@ -1,110 +1,131 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>timer.wiki – 범용 보스/시간 알림</title>
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2592483547260790"
-     crossorigin="anonymous"></script>
-  <link rel="stylesheet" href="style.css">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>timer.wiki – 범용 보스/시간 알림</title>
+	<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2592483547260790"
+		crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
-    <!-- Header -->
-    <header>
-      <h1>timer.wiki <span style="opacity:.6;font-size:.8em">– 범용 보스/시간 알림</span></h1>
-      <div class="tz">로컬 시간대: <span id="tz"></span></div>
-    </header>
+	<div class="container">
+		<!-- Header -->
+		<header>
+			<h1>timer.wiki <span style="opacity:.6;font-size:.8em">– 범용 보스/시간 알림</span></h1>
+			<div class="tz">로컬 시간대: <span id="tz"></span></div>
+		</header>
 
-    <!-- 알림 허용 & Import/Export -->
-    <div class="card" style="margin-bottom:12px">
-      <div class="stack" style="justify-content:space-between;align-items:center">
-        <div class="banner" id="notifyBanner">
-          🔔 브라우저 알림을 켜면 백그라운드에서도 알림을 받을 수 있어요.
-          <button class="btn small" id="btnEnableNotif">알림 허용</button>
-          <button class="btn small" id="btnEnableSound">소리 켜기</button>
-        </div>
-        <div class="stack">
-          <button class="btn ghost small" id="btnExport">내보내기</button>
-          <label class="btn ghost small" for="importFile">가져오기</label>
-          <input id="importFile" type="file" accept="application/json" style="display:none" />
-        </div>
-      </div>
-    </div>
+		<!-- 알림 허용 & Import/Export -->
+		<div class="card" style="margin-bottom:12px">
+			<div class="stack" style="justify-content:space-between;align-items:center">
+				<div class="banner" id="notifyBanner">
+					🔔 브라우저 알림을 켜면 백그라운드에서도 알림을 받을 수 있어요.
+					<button class="btn small" id="btnEnableNotif">알림 허용</button>
+					<button class="btn small" id="btnEnableSound">소리 켜기</button>
+				</div>
+				<div class="stack">
+					<button class="btn ghost small" id="btnExport">내보내기</button>
+					<label class="btn ghost small" for="importFile">가져오기</label>
+					<input id="importFile" type="file" accept="application/json" style="display:none" />
+				</div>
+			</div>
+		</div>
 
-    <!-- 타이머 추가 -->
-    <div class="card">
-      <div class="section-title">타이머 추가</div>
+		<!-- 타이머 추가 -->
+		<div class="card">
+			<div class="section-title">타이머 추가</div>
 
-      <!-- 이름 -->
-      <div class="row">
-        <div class="col">
-          <label>이름 (보스 / 이벤트)</label>
-          <input id="name" type="text" placeholder="예: 카오스 드래곤" />
-        </div>
-      </div>
+			<!-- 이름 -->
+			<div class="row">
+				<div class="col">
+					<label>이름 (보스 / 이벤트)</label>
+					<input id="name" type="text" placeholder="예: 카오스 드래곤" />
+				</div>
+			</div>
 
-      <!-- 모드 -->
-      <div class="row">
-        <div class="col">
-          <label>모드</label>
-          <div class="radio-group">
-            <label class="radio"><input type="radio" name="mode" value="countdown" checked> 카운트다운</label>
-            <label class="radio"><input type="radio" name="mode" value="daily"> 매일 정해진 시각</label>
-          </div>
-        </div>
+			<!-- 모드 -->
+			<div class="row">
+				<div class="col">
+					<label>모드</label>
+					<div class="radio-group">
+						<label class="radio"><input type="radio" name="mode" value="countdown" checked> 카운트다운</label>
+						<label class="radio"><input type="radio" name="mode" value="daily"> 매일 정해진 시각</label>
+					</div>
+				</div>
 
-        <!-- 카운트다운 입력 -->
-        <div class="col" id="countdownInputs">
-          <label>카운트다운 (분)</label>
-          <input id="countdownMin" type="number" min="1" step="1" value="60" />
-          <div style="margin-top:6px">
-            <label><input id="repeatEvery" type="checkbox" /> 완료 시 같은 간격으로 반복</label>
-          </div>
-        </div>
+				<!-- 카운트다운 입력 -->
+				<div class="col" id="countdownInputs">
+					<label>카운트다운 (분)</label>
+					<input id="countdownMin" type="number" min="1" step="1" value="60" />
+					<div style="margin-top:6px">
+						<label><input id="repeatEvery" type="checkbox" /> 완료 시 같은 간격으로 반복</label>
+					</div>
+				</div>
 
-        <!-- 매일 입력 -->
-        <div class="col" id="dailyInputs" style="display:none">
-          <label>시각 (24h)</label>
-          <input id="dailyTime" type="time" />
-        </div>
-      </div>
+				<!-- 매일 입력 -->
+				<div class="col" id="dailyInputs" style="display:none">
+					<label>시각 (24h)</label>
+					<input id="dailyTime" type="time" />
+				</div>
+			</div>
 
-      <!-- 사전 알림 -->
-      <div class="row">
-        <div class="col">
-          <label>사전 알림(분 전) – 클릭해 선택</label>
-          <div class="chips" id="preChips"></div>
-          <div class="stack" style="margin-top:6px">
-            <input id="preCustom" type="number" placeholder="임의 분" min="1" step="1" style="width:120px" />
-            <button class="btn small" id="btnAddPre">+ 추가</button>
-          </div>
-        </div>
-      </div>
+			<!-- 사전 알림 -->
+			<div class="row">
+				<div class="col">
+					<label>사전 알림(분 전) – 클릭해 선택</label>
+					<div class="chips" id="preChips"></div>
+					<div class="stack" style="margin-top:6px">
+						<input id="preCustom" type="number" placeholder="임의 분" min="1" step="1" style="width:120px" />
+						<button class="btn small" id="btnAddPre">+ 추가</button>
+					</div>
+				</div>
+			</div>
 
-      <!-- 추가 버튼 -->
-      <div class="row">
-        <div class="col">
-          <button class="btn primary" id="btnAdd">타이머 추가</button>
-        </div>
-      </div>
-    </div>
+			<!-- 추가 버튼 -->
+			<div class="row">
+				<div class="col">
+					<button class="btn primary" id="btnAdd">타이머 추가</button>
+				</div>
+			</div>
+		</div>
 
-    <!-- 타이머 목록 -->
-    <div class="card" style="margin-top:12px">
-      <div class="section-title">내 타이머</div>
-      <div class="timer-list" id="list"></div>
-      <div id="emptyHint" class="banner" style="display:none;margin-top:10px">
-        아직 타이머가 없어요. 위에서 타이머를 추가해 보세요.
-      </div>
-    </div>
+		<!-- 타이머 목록 -->
+		<div id="timers-section" class="card" style="margin-top:12px">
+			<div class="section-title">내 타이머</div>
+			<div class="timer-list" id="list"></div>
+			<div id="emptyHint" class="banner" style="display:none;margin-top:10px">
+				아직 타이머가 없어요. 위에서 타이머를 추가해 보세요.
+			</div>
+		</div>
+		
+		<!-- 최근 울린 알람 -->
+		<section id="history-section" class="panel">
+			<div class="panel-header">
+				<h2>최근 울린 알람</h2>
+				<div class="actions">
+					<span id="history-count" class="muted"></span>
+					<button id="btn-clear-history" type="button" title="히스토리 비우기">비우기</button>
+					<label class="muted" style="margin-left:8px;">
+						최대
+						<input id="history-limit" type="number" min="1" max="50" value="10" style="width:56px;">
+						개
+					</label>
+					<label class="muted" style="display:flex;align-items:center;gap:6px;">
+						<input id="layout-history-first" type="checkbox" />
+						히스토리 우선
+					</label>
+				</div>
+			</div>
+			<ul id="history-list" class="history-list" aria-live="polite"></ul>
+		</section>
 
-    <footer>
-      ⚠️ 주의: 이 프로토타입은 브라우저 탭이 완전히 닫히면 알림이 동작하지 않을 수 있어요.
-      (서비스 워커/모바일 푸시는 추후 버전에서) · 저장: 로컬스토리지
-    </footer>
-  </div>
+		<footer>
+			⚠️ 주의: 이 프로토타입은 브라우저 탭이 완전히 닫히면 알림이 동작하지 않을 수 있어요.
+			(서비스 워커/모바일 푸시는 추후 버전에서) · 저장: 로컬스토리지
+		</footer>
+	</div>
 
-  <script src="script.js"></script>
+	<script src="script.js"></script>
 </body>
 </html>

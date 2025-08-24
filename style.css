@@ -1,16 +1,16 @@
 :root{
-  --bg:#0f1222; --panel:#171a2e; --muted:#9aa0b3; --text:#e8eaf6;
-  --accent:#8ab4ff; --good:#69db7c; --warn:#ffd43b; --bad:#ff6b6b; --chip:#232746;
+	--bg:#0f1222; --panel:#171a2e; --muted:#9aa0b3; --text:#e8eaf6;
+	--accent:#8ab4ff; --good:#69db7c; --warn:#ffd43b; --bad:#ff6b6b; --chip:#232746;
 }
 
 /* 기본 레이아웃 */
 *{box-sizing:border-box}
 html,body{height:100%}
 body{
-  margin:0;
-  background:linear-gradient(180deg,#0f1222,#0b0f1c);
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-  color:var(--text)
+	margin:0;
+	background:linear-gradient(180deg,#0f1222,#0b0f1c);
+	font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+	color:var(--text)
 }
 .container{max-width:980px;margin:0 auto;padding:24px}
 
@@ -21,8 +21,8 @@ header .tz{margin-left:auto;color:var(--muted);font-size:14px}
 
 /* 카드 */
 .card{
-  background:var(--panel);border:1px solid #20264a;border-radius:16px;
-  box-shadow:0 10px 24px rgba(0,0,0,.35);padding:16px
+	background:var(--panel);border:1px solid #20264a;border-radius:16px;
+	box-shadow:0 10px 24px rgba(0,0,0,.35);padding:16px
 }
 
 /* 폼/버튼 */
@@ -30,7 +30,7 @@ header .tz{margin-left:auto;color:var(--muted);font-size:14px}
 .col{flex:1 1 240px}
 label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
 input[type="text"], input[type="time"], input[type="number"], select{
-  width:100%;padding:12px 12px;border-radius:12px;background:#0e1227;color:var(--text);border:1px solid #253064
+	width:100%;padding:12px 12px;border-radius:12px;background:#0e1227;color:var(--text);border:1px solid #253064
 }
 input[type="checkbox"]{transform:scale(1.2)}
 .radio-group{display:flex;gap:8px;flex-wrap:wrap}
@@ -54,8 +54,8 @@ input[type="checkbox"]{transform:scale(1.2)}
 /* 타이머 목록 */
 .timer-list{margin-top:14px}
 .timer-item{
-  display:grid;grid-template-columns:1fr 120px 140px 120px auto;gap:10px;align-items:center;
-  background:#101534;border:1px solid #212a57;border-radius:12px;padding:10px
+	display:grid;grid-template-columns:1fr 120px 140px 120px auto;gap:10px;align-items:center;
+	background:#101534;border:1px solid #212a57;border-radius:12px;padding:10px
 }
 .timer-item h4{margin:0;font-size:15px}
 .meta{color:var(--muted);font-size:12px}
@@ -68,3 +68,59 @@ input[type="checkbox"]{transform:scale(1.2)}
 .section-title{margin:18px 0 10px 0;font-size:16px;color:#c8ceef}
 footer{margin-top:24px;color:var(--muted);font-size:12px}
 .danger{color:#ff8787}
+
+/* ==== History panel ==== */
+.panel{
+	border:1px solid #20264a;
+	border-radius:16px;
+	padding:16px;
+	margin-top:16px;
+	background:var(--panel);
+	box-shadow:0 10px 24px rgba(0,0,0,.25);
+}
+.panel-header{
+	display:flex;
+	align-items:center;
+	justify-content:space-between;
+	gap:12px;
+	margin-bottom:8px;
+}
+.panel-header h2{
+	font-size:1.1rem;
+	margin:0;
+}
+.panel-header .actions{
+	display:flex;
+	align-items:center;
+	gap:8px;
+}
+.muted{
+	color:var(--muted);
+	font-size:0.9rem;
+}
+.history-list{
+	list-style:none;
+	margin:0;
+	padding:0;
+}
+.history-item{
+	display:grid;
+	grid-template-columns:1fr auto auto;
+	align-items:center;
+	gap:10px;
+	padding:10px 8px;
+	border-top:1px dashed #2b356e;
+}
+.history-item:first-child{border-top:none}
+.history-title{font-weight:600}
+.history-meta{font-size:0.9rem;color:var(--muted)}
+.history-delete{
+	appearance:none;
+	border:1px solid #2b356e;
+	background:#121634;
+	border-radius:10px;
+	padding:6px 10px;
+	cursor:pointer;
+	color:var(--text);
+}
+.history-delete:hover{filter:brightness(1.1)}
