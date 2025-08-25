@@ -4,6 +4,21 @@ const $$ = sel => Array.from(document.querySelectorAll(sel));
 const TZ = Intl.DateTimeFormat().resolvedOptions().timeZone;
 $('#tz').textContent = TZ;
 
+function openTimePicker(el){
+	try{
+		if (el && typeof el.showPicker === 'function') {
+			el.showPicker();
+			return true;
+		}
+	} catch(_) {}
+	if (el) {
+		el.focus();
+		try { el.click(); } catch(_) {}
+		return true;
+	}
+	return false;
+}
+
 // Default pre-alert options (min)
 const DEFAULT_PRE = [1,3,5,10,15,30,60];
 
@@ -544,7 +559,43 @@ function escapeHtml(s){
 }
 
 // ==== Init ====
-document.addEventListener('DOMContentLoaded', initHistoryUI);
+document.addEventListener('DOMContentLoaded', () => {
+	initHistoryUI();
+
+	const dailyWrap = document.getElementById('dailyInputs');
+	const dailyTime = document.getElementById('dailyTime');
+
+	if (dailyWrap && dailyTime) {
+		// ① 컨테이너(라벨/빈 공간) 클릭 시 열기
+		dailyWrap.addEventListener('click', (e) => {
+			const m = document.querySelector('input[name="mode"]:checked')?.value;
+			if (m !== 'daily') return;
+
+			// input 자체를 눌렀을 때도 강제로 열어주자 (브라우저마다 다름)
+			openTimePicker(dailyTime);
+		});
+
+		// ② 입력칸을 눌렀을 때도 무조건 열리도록 (아이콘 안 눌러도 뜨게)
+		dailyTime.addEventListener('pointerdown', (e) => {
+			const m = document.querySelector('input[name="mode"]:checked')?.value;
+			if (m !== 'daily') return;
+			// 기본 포커스 흐름 대신 바로 피커 열기
+			e.preventDefault();
+			openTimePicker(dailyTime);
+		}, { passive: false });
+
+		// ③ 키보드 접근성: 엔터/스페이스로도 열기
+		dailyWrap.addEventListener('keydown', (e) => {
+			const m = document.querySelector('input[name="mode"]:checked')?.value;
+			if (m !== 'daily') return;
+			if (e.key === 'Enter' || e.key === ' ') {
+				e.preventDefault();
+				openTimePicker(dailyTime);
+			}
+		});
+	}
+});
+
 renderList();
 setInterval(tick, 1000);
 
